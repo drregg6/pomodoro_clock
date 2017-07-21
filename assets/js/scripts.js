@@ -18,53 +18,38 @@ var moreBreakTime = buttons[3];
 lessSessionTime.addEventListener('click', function(ev) {
     if (intSessionTimeAmount > 0) {
         intSessionTimeAmount--;
-        
-        sessionTimeAmount.forEach(function(sessionTime) {
-            sessionTime.textContent = '' + intSessionTimeAmount;
-        });
     } else {
         intSessionTimeAmount = 0;
-        sessionTimeAmount.forEach(function(sessionTime) {
-            sessionTime.textContent = '' + intSessionTimeAmount;
-        });
     }
+    sessionTimeAmount.forEach(function(sessionTime) {
+        sessionTime.textContent = '' + intSessionTimeAmount;
+    });
 });
 lessBreakTime.addEventListener('click', function() {
     if (intBreakTimeAmount > 0) {
         intBreakTimeAmount--;
-        
-        breakTimeAmount.textContent = '' + intBreakTimeAmount;
     } else {
         intBreakTimeAmount = 0;
-        
-        breakTimeAmount.textContent = '' + intBreakTimeAmount;
     }
+    breakTimeAmount.textContent = '' + intBreakTimeAmount;
 });
 moreSessionTime.addEventListener('click', function() {
     if (intSessionTimeAmount > -1 && intSessionTimeAmount < 60) {
         intSessionTimeAmount++;
-        
-        sessionTimeAmount.forEach(function(sessionTime) {
-            sessionTime.textContent = '' + intSessionTimeAmount;
-        });
     } else if (intSessionTimeAmount === 60) {
         intSessionTimeAmount = 60;
-        
-        sessionTimeAmount.forEach(function(sessionTime) {
-            sessionTime.textContent = '' + intSessionTimeAmount;
-        });
     }
+    sessionTimeAmount.forEach(function(sessionTime) {
+        sessionTime.textContent = '' + intSessionTimeAmount;
+    });
 });
 moreBreakTime.addEventListener('click', function() {
     if (intBreakTimeAmount > -1 && intBreakTimeAmount < 15) {
         intBreakTimeAmount++;
-        
-        breakTimeAmount.textContent = '' + intBreakTimeAmount;
     } else {
         intBreakTimeAmount = 15;
-        
-        breakTimeAmount.textContent = '' + intBreakTimeAmount;
     }
+    breakTimeAmount.textContent = '' + intBreakTimeAmount;
 });
 
 
