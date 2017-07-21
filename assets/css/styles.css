@@ -64,7 +64,10 @@ body {
 }
 
 .container {
+    width: 300px;
     margin: 25px auto;
+    padding: 50px 0;
+    background: #f3f3f3;
 }
 
 /* -----------------------------------------------------------------------
@@ -75,7 +78,8 @@ Clock
 
 .clock {
     border: 1px solid black;
-    margin: 25px auto;
+    margin: 0 auto;
+    margin-bottom: 25px;
     
     width: 200px;
     height: 200px;
@@ -93,6 +97,20 @@ Times
 .times .session,
 .times .break {
     display: inline-block;
+    margin: 0 15px;
+}
+
+/* -----------------------------------------------------------------------
+
+Buttons
+
+----------------------------------------------------------------------- */
+
+.buttons {
+    margin-top: 25px;
+}
+
+.buttons button {
     margin: 0 15px;
 }
 
