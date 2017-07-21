@@ -14,7 +14,40 @@
     </head>
     <body>
         <div class="container">
-            <h1>Hello World!</h1>
+            <div class="clock"><span class="time-amount">5</span>:00</div>
+            
+            <div class="times">
+                <div class="session">
+                    <p>
+                        Session time
+                    </p>
+                    <p>
+                        <span class="time-amount">25</span> min
+                    </p>
+                    <p>
+                        <button class="less-time">&minus;</button>
+                        <button class="more-time">&plus;</button>
+                    </p>
+                </div>
+                <div class="break">
+                    <p>
+                        Break time
+                    </p>
+                    <p>
+                        <span class="time-amount">5</span> min
+                    </p>
+                    <p>
+                        <button class="less-time">&minus;</button>
+                        <button class="more-time">&plus;</button>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <button class="visible">Start</button>
+                <button class="hidden" id="pause">Pause</button>
+                <button>Reset</button>
+            </div>
         </div>
         
         <script src="assets/js/scripts.js"></script>
