@@ -62,3 +62,9 @@ pauseButton.addEventListener('click', function() {
     this.classList.add('hidden');
     startButton.classList.remove('hidden');
 });
+
+// time funcs
+var now = new Date();
+var seconds = now.getSeconds();
+var minutes = now.getMinutes();
+var hours = now.getHours();
