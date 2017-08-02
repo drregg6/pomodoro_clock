@@ -13,8 +13,9 @@ var lessSessionTime = buttons[0];
 var lessBreakTime = buttons[2];
 var moreSessionTime = buttons[1];
 var moreBreakTime = buttons[3];
-
 var resetButton = buttons[6];
+
+var countdown;
 
 
 
@@ -62,7 +63,7 @@ moreBreakTime.addEventListener('click', function() {
 
 startButton.addEventListener('click', function() {
     // function to start the countdown on the clock
-    setInterval(timer, 1000);
+    countdown = setInterval(timer, 1000);
     
     this.classList.add('hidden');
     pauseButton.classList.remove('hidden');
@@ -70,15 +71,24 @@ startButton.addEventListener('click', function() {
 
 pauseButton.addEventListener('click', function() {
     // timer needs to pause on click, all amounts remain the same, but the interval pauses
+    clearInterval(countdown);
+    
     
     this.classList.add('hidden');
     startButton.classList.remove('hidden');
 });
 
 resetButton.addEventListener('click', function(ev) {
+    clearInterval(countdown);
+    
     intSessionTimeAmount = 25;
     intSessionSecondsAmount = 0;
     intBreakTimeAmount = 5;
+    
+    if (startButton.classList.contains('hidden')) {
+        pauseButton.classList.add('hidden');
+        startButton.classList.remove('hidden');
+    }
     
     sessionSecondsAmount.textContent = '0' + intSessionSecondsAmount;
     sessionTimeAmount.forEach(function(sessionTime) {
@@ -90,8 +100,8 @@ resetButton.addEventListener('click', function(ev) {
 });
 
 
-
 function timer() {
+    
     if (intSessionTimeAmount === 0 && intSessionSecondsAmount === 0) {
         pauseButton.classList.add('hidden');
         startButton.classList.remove('hidden');
@@ -110,7 +120,31 @@ function timer() {
         sessionSecondsAmount.textContent = '' + intSessionSecondsAmount;
         sessionTimeAmount[0].textContent = '' + intSessionTimeAmount;
     }
+    
 }
+
+
+
+//var timer = setInterval(function() {
+//    if (intSessionTimeAmount === 0 && intSessionSecondsAmount === 0) {
+//        pauseButton.classList.add('hidden');
+//        startButton.classList.remove('hidden');
+//        console.alert('Time for a break!');
+//        return;
+//    } else if (intSessionSecondsAmount === 0) {
+//        intSessionSecondsAmount = 59;
+//        intSessionTimeAmount--;
+//    } else {
+//        intSessionSecondsAmount--;
+//    }
+//    
+//    if (intSessionSecondsAmount < 10 && intSessionSecondsAmount >= 0) {
+//        sessionSecondsAmount.textContent = '0' + intSessionSecondsAmount;
+//    } else {
+//        sessionSecondsAmount.textContent = '' + intSessionSecondsAmount;
+//        sessionTimeAmount[0].textContent = '' + intSessionTimeAmount;
+//    }
+//}, 1000);
 
 
 
