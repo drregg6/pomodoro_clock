@@ -1,12 +1,19 @@
+/*\
+|*|
+|*|  TODO:
+|*|  - break functionality
+|*|  - make sure you cannot add or subtract time while timer is running
+|*|
+\*/
+
 // grabbing document items
-// might need to change - displayTimeAmount and sessionTimeAmount
-// displayTimeAmount will be adjusted for session / break amount
-var sessionTimeAmount = document.querySelectorAll('.session-time-amount');
+var displayTimeAmount = document.querySelector('.display-time-amount');
+var sessionTimeAmount = document.querySelector('.session-time-amount');
 var sessionSecondsAmount = document.querySelector('.session-seconds-amount');
 var breakTimeAmount = document.querySelector('.break-time-amount');
 
 // for mathematical purposes, the text needs to be converted to ints
-var intSessionTimeAmount = parseInt(sessionTimeAmount[0].textContent);
+var intSessionTimeAmount = parseInt(sessionTimeAmount.textContent);
 var intSessionSecondsAmount = parseInt(sessionSecondsAmount.textContent);
 var intBreakTimeAmount = parseInt(breakTimeAmount.textContent);
 
@@ -14,10 +21,10 @@ var intBreakTimeAmount = parseInt(breakTimeAmount.textContent);
 var buttons = document.querySelectorAll('button');
 var startButton = buttons[4];
 var pauseButton = buttons[5];
-var lessSessionTime = buttons[0];
-var lessBreakTime = buttons[2];
-var moreSessionTime = buttons[1];
-var moreBreakTime = buttons[3];
+var subtractSessionButton = buttons[0];
+var subtractBreakButton = buttons[2];
+var addSessionButton = buttons[1];
+var addBreakButton = buttons[3];
 var resetButton = buttons[6];
 
 // variable to store the setTimer function
@@ -27,8 +34,17 @@ var countdown;
 
 
 
-// session time funcs
-lessSessionTime.addEventListener('click', function(ev) {
+// button event listeners
+subtractSessionButton.addEventListener('click', lessSessionTime);
+addSessionButton.addEventListener('click', moreSessionTime);
+subtractBreakButton.addEventListener('click', lessBreakTime);
+addBreakButton.addEventListener('click', moreBreakTime);
+startButton.addEventListener('click', startTimer);
+pauseButton.addEventListener('click', pauseTimer);
+resetButton.addEventListener('click', reset);
+
+
+function lessSessionTime() {
     // as long as the session time is above 1, keep subtracting
     if (intSessionTimeAmount > 1) {
         intSessionTimeAmount--;
@@ -37,11 +53,10 @@ lessSessionTime.addEventListener('click', function(ev) {
     }
     
     // update the display
-    sessionTimeAmount.forEach(function(sessionTime) {
-        sessionTime.textContent = '' + intSessionTimeAmount;
-    });
-});
-moreSessionTime.addEventListener('click', function() {
+    updateDisplay.session();
+    updateDisplay.display();
+}
+function moreSessionTime() {
     // keep sessions between 0 minutes and 60 minutes
     if (intSessionTimeAmount > 0 && intSessionTimeAmount < 60) {
         intSessionTimeAmount++;
@@ -50,13 +65,13 @@ moreSessionTime.addEventListener('click', function() {
     }
     
     // update the display
-    sessionTimeAmount.forEach(function(sessionTime) {
-        sessionTime.textContent = '' + intSessionTimeAmount;
-    });
-});
+    updateDisplay.session();
+    updateDisplay.display();
+}
 
-// break time funcs
-lessBreakTime.addEventListener('click', function() {
+
+
+function lessBreakTime() {
     // as long as the break time is above 1 minute, keep subtracting
     if (intBreakTimeAmount > 1) {
         intBreakTimeAmount--;
@@ -65,9 +80,9 @@ lessBreakTime.addEventListener('click', function() {
     }
     
     // update the display of the element
-    breakTimeAmount.textContent = '' + intBreakTimeAmount;
-});
-moreBreakTime.addEventListener('click', function() {
+    updateDisplay.break();
+};
+function moreBreakTime() {
     // breaks are limited between 1 and 15 minutes
     if (intBreakTimeAmount > 0 && intBreakTimeAmount < 15) {
         intBreakTimeAmount++;
@@ -76,30 +91,38 @@ moreBreakTime.addEventListener('click', function() {
     }
     
     // update the display of the element on each click
-    breakTimeAmount.textContent = '' + intBreakTimeAmount;
-});
+    updateDisplay.break();
+}
 
 
 // start button functionality
-startButton.addEventListener('click', function() {
+function startTimer() {
     // set countdown to setInterval function, running timer every 1 second
     countdown = setInterval(timer, 1000);
     
     // remove the start button and replace it with the pause button
     this.classList.add('hidden');
     pauseButton.classList.remove('hidden');
-});
+};
+
+
+
+
 // pause button functionality
-pauseButton.addEventListener('click', function() {
+ function pauseTimer() {
     // stops the countdown interval from running
     clearInterval(countdown);
     
     // remove the pause button and replace it with the start button
     this.classList.add('hidden');
     startButton.classList.remove('hidden');
-});
+}
+
+
+
+
 // reset button functionality
-resetButton.addEventListener('click', function(ev) {
+function reset() {
     // stops the countdown interval from running
     clearInterval(countdown);
     
@@ -115,12 +138,12 @@ resetButton.addEventListener('click', function(ev) {
     }
     
     // reset all displays to default times
-    sessionSecondsAmount.textContent = '0' + intSessionSecondsAmount;
-    sessionTimeAmount.forEach(function(sessionTime) {
-        sessionTime.textContent = '' + intSessionTimeAmount;
-    });
-    breakTimeAmount.textContent = '' + intBreakTimeAmount;
-});
+    updateDisplay.singleSeconds();
+    updateDisplay.display();
+    updateDisplay.break();
+    updateDisplay.session();
+}
+
 
 
 // function to run for each second
@@ -145,11 +168,55 @@ function timer() {
     // updating the display
     if (intSessionSecondsAmount < 10 && intSessionSecondsAmount >= 0) {
         // for single digit seconds, there needs to be a '0' in front of it
-        sessionSecondsAmount.textContent = '0' + intSessionSecondsAmount;
+        updateDisplay.singleSeconds();
     } else {
         // otherwise, display the string version of the int
-        sessionSecondsAmount.textContent = '' + intSessionSecondsAmount;
-        sessionTimeAmount[0].textContent = '' + intSessionTimeAmount;
+        updateDisplay.largerSeconds();
+        updateDisplay.display();
     }
     
+}
+
+// Not sure why this isn't working
+//function disable() {
+//    if (subtractBreakButton.disabled) {
+//        subtractBreakButton.disabled = true;
+//        subtractSessionButton.disabled = true;
+//        addBreakButton.disabled = true;
+//        addSessionButton.disabled = true;
+//    } else {
+//        subtractBreakButton.disabled = false;
+//        subtractSessionButton.disabled = false;
+//        addBreakButton.disabled = false;
+//        addSessionButton.disabled = false;
+//    }
+//    
+//}
+
+
+
+// object used to update various displays
+var updateDisplay = new UpdateDisplay();
+
+function UpdateDisplay() {
+    
+    this.singleSeconds = function() {
+        sessionSecondsAmount.textContent = '0' + intSessionSecondsAmount;
+    }
+    
+    this.largerSeconds = function() {
+        sessionSecondsAmount.textContent = '' + intSessionSecondsAmount;
+    }
+    
+    this.display = function() {
+        displayTimeAmount.textContent = '' + intSessionTimeAmount;
+    }
+    
+    this.session = function() {
+        sessionTimeAmount.textContent = '' + intSessionTimeAmount;
+    }
+    
+    this.break = function() {
+        breakTimeAmount.textContent = '' + intBreakTimeAmount;
+    }
 }
