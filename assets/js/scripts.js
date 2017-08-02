@@ -95,8 +95,6 @@ resetButton.addEventListener('click', function(ev) {
         sessionTime.textContent = '' + intSessionTimeAmount;
     });
     breakTimeAmount.textContent = '' + intBreakTimeAmount;
-    
-    // timer() needs to stop running on click
 });
 
 
@@ -105,8 +103,10 @@ function timer() {
     if (intSessionTimeAmount === 0 && intSessionSecondsAmount === 0) {
         pauseButton.classList.add('hidden');
         startButton.classList.remove('hidden');
+        
         console.alert('Time for a break!');
         return;
+        
     } else if (intSessionSecondsAmount === 0) {
         intSessionSecondsAmount = 59;
         intSessionTimeAmount--;
@@ -122,43 +122,3 @@ function timer() {
     }
     
 }
-
-
-
-//var timer = setInterval(function() {
-//    if (intSessionTimeAmount === 0 && intSessionSecondsAmount === 0) {
-//        pauseButton.classList.add('hidden');
-//        startButton.classList.remove('hidden');
-//        console.alert('Time for a break!');
-//        return;
-//    } else if (intSessionSecondsAmount === 0) {
-//        intSessionSecondsAmount = 59;
-//        intSessionTimeAmount--;
-//    } else {
-//        intSessionSecondsAmount--;
-//    }
-//    
-//    if (intSessionSecondsAmount < 10 && intSessionSecondsAmount >= 0) {
-//        sessionSecondsAmount.textContent = '0' + intSessionSecondsAmount;
-//    } else {
-//        sessionSecondsAmount.textContent = '' + intSessionSecondsAmount;
-//        sessionTimeAmount[0].textContent = '' + intSessionTimeAmount;
-//    }
-//}, 1000);
-
-
-
-
-
-
-// time funcs
-/*
-var now = new Date();
-var seconds = now.getSeconds();
-var minutes = now.getMinutes();
-var hours = now.getHours();
-*/
-
-//var timer = (new Date());
-//timer = timer.setHours(0, intSessionTimeAmount, 0);
-//timer = timer.setMinutes(intSessionTimeAmount);
