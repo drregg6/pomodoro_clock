@@ -1,7 +1,9 @@
 var sessionTimeAmount = document.querySelectorAll('.session-time-amount');
+var sessionSecondsAmount = document.querySelector('.session-seconds-amount');
 var breakTimeAmount = document.querySelector('.break-time-amount');
 
 var intSessionTimeAmount = parseInt(sessionTimeAmount[0].textContent);
+var intSessionSecondsAmount = parseInt(sessionSecondsAmount.textContent);
 var intBreakTimeAmount = parseInt(breakTimeAmount.textContent);
 
 var buttons = document.querySelectorAll('button');
@@ -56,27 +58,64 @@ moreBreakTime.addEventListener('click', function() {
     breakTimeAmount.textContent = '' + intBreakTimeAmount;
 });
 
-resetButton.addEventListener('click', function(ev) {
-    intSessionTimeAmount = 25;
-    intBreakTimeAmount = 5;
-    sessionTimeAmount.forEach(function(sessionTime) {
-        sessionTime.textContent = '' + intSessionTimeAmount;
-    });
-    breakTimeAmount.textContent = '' + intBreakTimeAmount;
-});
 
 
 startButton.addEventListener('click', function() {
     // function to start the countdown on the clock
+    setInterval(timer, 1000);
     
     this.classList.add('hidden');
     pauseButton.classList.remove('hidden');
 });
 
 pauseButton.addEventListener('click', function() {
+    // timer needs to pause on click, all amounts remain the same, but the interval pauses
+    
     this.classList.add('hidden');
     startButton.classList.remove('hidden');
 });
+
+resetButton.addEventListener('click', function(ev) {
+    intSessionTimeAmount = 25;
+    intSessionSecondsAmount = 0;
+    intBreakTimeAmount = 5;
+    
+    sessionSecondsAmount.textContent = '0' + intSessionSecondsAmount;
+    sessionTimeAmount.forEach(function(sessionTime) {
+        sessionTime.textContent = '' + intSessionTimeAmount;
+    });
+    breakTimeAmount.textContent = '' + intBreakTimeAmount;
+    
+    // timer() needs to stop running on click
+});
+
+
+
+function timer() {
+    if (intSessionTimeAmount === 0 && intSessionSecondsAmount === 0) {
+        pauseButton.classList.add('hidden');
+        startButton.classList.remove('hidden');
+        console.alert('Time for a break!');
+        return;
+    } else if (intSessionSecondsAmount === 0) {
+        intSessionSecondsAmount = 59;
+        intSessionTimeAmount--;
+    } else {
+        intSessionSecondsAmount--;
+    }
+    
+    if (intSessionSecondsAmount < 10 && intSessionSecondsAmount >= 0) {
+        sessionSecondsAmount.textContent = '0' + intSessionSecondsAmount;
+    } else {
+        sessionSecondsAmount.textContent = '' + intSessionSecondsAmount;
+        sessionTimeAmount[0].textContent = '' + intSessionTimeAmount;
+    }
+}
+
+
+
+
+
 
 // time funcs
 /*
@@ -86,5 +125,6 @@ var minutes = now.getMinutes();
 var hours = now.getHours();
 */
 
-var minutes = new Date();
-var minutes = minutes.setMinutes(intSessionTimeAmount);
+//var timer = (new Date());
+//timer = timer.setHours(0, intSessionTimeAmount, 0);
+//timer = timer.setMinutes(intSessionTimeAmount);
