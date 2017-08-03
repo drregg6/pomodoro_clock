@@ -9,26 +9,30 @@
 \*/
 
 // grabbing document items
-var displayTimeAmount = document.querySelector('.display-time-amount');
-var sessionTimeAmount = document.querySelector('.session-time-amount');
-var sessionSecondsAmount = document.querySelector('.session-seconds-amount');
-var breakTimeAmount = document.querySelector('.break-time-amount');
-var warningDiv = document.querySelector('.warning');
+var displayTimeAmount, sessionTimeAmount, sessionSecondsAmount, breakTimeAmount, warningDiv;
+displayTimeAmount = document.querySelector('.display-time-amount');
+sessionTimeAmount = document.querySelector('.session-time-amount');
+sessionSecondsAmount = document.querySelector('.session-seconds-amount');
+breakTimeAmount = document.querySelector('.break-time-amount');
+warningDiv = document.querySelector('.warning');
 
 // for mathematical purposes, the text needs to be converted to ints
-var intSessionTimeAmount = parseInt(sessionTimeAmount.textContent);
-var intSessionSecondsAmount = parseInt(sessionSecondsAmount.textContent);
-var intBreakTimeAmount = parseInt(breakTimeAmount.textContent);
+var intSessionTimeAmount, intSessionSecondsAmount, intBreakTimeAmount, intDisplayTimeAmount;
+intSessionTimeAmount = parseInt(sessionTimeAmount.textContent);
+intSessionSecondsAmount = parseInt(sessionSecondsAmount.textContent);
+intBreakTimeAmount = parseInt(breakTimeAmount.textContent);
 
 // grabbing the buttons
-var buttons = document.querySelectorAll('button');
-var startButton = buttons[4];
-var pauseButton = buttons[5];
-var subtractSessionButton = buttons[0];
-var subtractBreakButton = buttons[2];
-var addSessionButton = buttons[1];
-var addBreakButton = buttons[3];
-var resetButton = buttons[6];
+var buttons, startButton, pauseButton, substractSessionButton,
+    substractBreakButton, addSessionButton, addBreakButton, resetButton;
+buttons = document.querySelectorAll('button');
+startButton = buttons[4];
+pauseButton = buttons[5];
+subtractSessionButton = buttons[0];
+subtractBreakButton = buttons[2];
+addSessionButton = buttons[1];
+addBreakButton = buttons[3];
+resetButton = buttons[6];
 
 // variable to store the setTimer function
 var countdown;
@@ -37,7 +41,7 @@ var countdown;
 
 
 
-// button event listeners
+// event listeners
 subtractSessionButton.addEventListener('click', lessSessionTime);
 addSessionButton.addEventListener('click', moreSessionTime);
 subtractBreakButton.addEventListener('click', lessBreakTime);
@@ -45,32 +49,8 @@ addBreakButton.addEventListener('click', moreBreakTime);
 startButton.addEventListener('click', startTimer);
 pauseButton.addEventListener('click', pauseTimer);
 resetButton.addEventListener('click', reset);
-sessionTimeAmount.addEventListener('input', function(ev) {
-    if (isNaN(this.textContent)) {
-        warningDiv.classList.remove('invisible');
-    } else if (this.textContent < 1 || this.textContent > 60) {
-        warningDiv.classList.remove('invisible');
-    } else {
-        intSessionTimeAmount = parseInt(this.textContent);
-        updateDisplay.display();
-        if (!warningDiv.classList.contains('invisible')) {
-            warningDiv.classList.add('invisible');
-        }
-    }
-});
-breakTimeAmount.addEventListener('input', function() {
-    if (isNaN(this.textContent)) {
-        warningDiv.classList.remove('invisible');
-    } else if (this.textContent < 1 || this.textContent > 15) {
-        warningDiv.classList.remove('invisible');
-    } else {
-        intBreakTimeAmount = parseInt(this.textContent);
-        updateDisplay.break();
-        if (!warningDiv.classList.contains('invisible')) {
-            warningDiv.classList.add('invisible');
-        }
-    }
-});
+sessionTimeAmount.addEventListener('input', sessionEditable);
+breakTimeAmount.addEventListener('input', breakEditable);
 
 
 function lessSessionTime() {
@@ -97,6 +77,21 @@ function moreSessionTime() {
     updateDisplay.session();
     updateDisplay.display();
 }
+function sessionEditable() {
+    // user input must be a number between 1 and 60
+    if (isNaN(this.textContent)) {
+        warningDiv.classList.remove('invisible');
+    } else if (this.textContent < 1 || this.textContent > 60) {
+        warningDiv.classList.remove('invisible');
+    } else {
+        // if it passes, remove the warning and make the display that number
+        intSessionTimeAmount = parseInt(this.textContent);
+        updateDisplay.display();
+        if (!warningDiv.classList.contains('invisible')) {
+            warningDiv.classList.add('invisible');
+        }
+    }
+}
 
 
 
@@ -122,23 +117,35 @@ function moreBreakTime() {
     // update the display of the element on each click
     updateDisplay.break();
 }
+function breakEditable() {
+    // user input must be a digit between 1 and 60
+    if (isNaN(this.textContent)) {
+        warningDiv.classList.remove('invisible');
+    } else if (this.textContent < 1 || this.textContent > 15) {
+        warningDiv.classList.remove('invisible');
+    } else {
+        // if it passes, update the display and remove the warning
+        intBreakTimeAmount = parseInt(this.textContent);
+        updateDisplay.break();
+        if (!warningDiv.classList.contains('invisible')) {
+            warningDiv.classList.add('invisible');
+        }
+    }
+}
+
 
 
 // start button functionality
 function startTimer() {
-    // set countdown to setInterval function, running timer every 1 second
+    // there must be a valid time in order for the timer to start
     if (warningDiv.classList.contains('invisible')) {
+        // set countdown to setInterval function, running timer every 1 second
         countdown = setInterval(timer, 1000);
         disable();
         
         this.classList.add('hidden');
         pauseButton.classList.remove('hidden');
     }
-//    disable();
-    
-    // remove the start button and replace it with the pause button
-//    this.classList.add('hidden');
-//    pauseButton.classList.remove('hidden');
 };
 
 
@@ -174,6 +181,7 @@ function reset() {
         startButton.classList.remove('hidden');
     }
     
+    // if the warning is visible, remove it
     if (!warningDiv.classList.contains('invisible')) {
         warningDiv.classList.add('invisible');
     }
@@ -222,6 +230,7 @@ function timer() {
 }
 
 // Disable the time adjusters while timer is running
+// this is still not working properly
 function disable() {
     if (!startButton.classList.contains('hidden')) {
         subtractBreakButton.disabled = true;
@@ -234,7 +243,6 @@ function disable() {
         addBreakButton.disabled = false;
         addSessionButton.disabled = false;
     }
-    
 }
 
 
@@ -243,23 +251,18 @@ function disable() {
 var updateDisplay = new UpdateDisplay();
 
 function UpdateDisplay() {
-    
     this.singleSeconds = function() {
         sessionSecondsAmount.textContent = '0' + intSessionSecondsAmount;
     }
-    
     this.largerSeconds = function() {
         sessionSecondsAmount.textContent = '' + intSessionSecondsAmount;
     }
-    
     this.display = function() {
         displayTimeAmount.textContent = '' + intSessionTimeAmount;
     }
-    
     this.session = function() {
         sessionTimeAmount.textContent = '' + intSessionTimeAmount;
     }
-    
     this.break = function() {
         breakTimeAmount.textContent = '' + intBreakTimeAmount;
     }
