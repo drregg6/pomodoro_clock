@@ -123,3 +123,15 @@ Custom Classes
 .hidden {
     display: none;
 }
+
+.invisible {
+    visibility: hidden;
+}
+
+.warning {
+    margin-top: 25px;
+    
+    font-size: 14px;
+    font-weight: bold;
+    color: #f00;
+}

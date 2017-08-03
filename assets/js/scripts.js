@@ -2,7 +2,9 @@
 |*|
 |*|  TODO:
 |*|  - break functionality
-|*|  - make sure you cannot add or subtract time while timer is running
+|*|  - it will ALWAYS go to break after the session time runs out //
+|*|    - should i add a new intDisplayTime amount which swaps between the two?
+|*|    - it stores which time it is currently on
 |*|
 \*/
 
@@ -11,6 +13,7 @@ var displayTimeAmount = document.querySelector('.display-time-amount');
 var sessionTimeAmount = document.querySelector('.session-time-amount');
 var sessionSecondsAmount = document.querySelector('.session-seconds-amount');
 var breakTimeAmount = document.querySelector('.break-time-amount');
+var warningDiv = document.querySelector('.warning');
 
 // for mathematical purposes, the text needs to be converted to ints
 var intSessionTimeAmount = parseInt(sessionTimeAmount.textContent);
@@ -42,6 +45,32 @@ addBreakButton.addEventListener('click', moreBreakTime);
 startButton.addEventListener('click', startTimer);
 pauseButton.addEventListener('click', pauseTimer);
 resetButton.addEventListener('click', reset);
+sessionTimeAmount.addEventListener('input', function(ev) {
+    if (isNaN(this.textContent)) {
+        warningDiv.classList.remove('invisible');
+    } else if (this.textContent < 1 || this.textContent > 60) {
+        warningDiv.classList.remove('invisible');
+    } else {
+        intSessionTimeAmount = parseInt(this.textContent);
+        updateDisplay.display();
+        if (!warningDiv.classList.contains('invisible')) {
+            warningDiv.classList.add('invisible');
+        }
+    }
+});
+breakTimeAmount.addEventListener('input', function() {
+    if (isNaN(this.textContent)) {
+        warningDiv.classList.remove('invisible');
+    } else if (this.textContent < 1 || this.textContent > 15) {
+        warningDiv.classList.remove('invisible');
+    } else {
+        intBreakTimeAmount = parseInt(this.textContent);
+        updateDisplay.break();
+        if (!warningDiv.classList.contains('invisible')) {
+            warningDiv.classList.add('invisible');
+        }
+    }
+});
 
 
 function lessSessionTime() {
@@ -98,11 +127,18 @@ function moreBreakTime() {
 // start button functionality
 function startTimer() {
     // set countdown to setInterval function, running timer every 1 second
-    countdown = setInterval(timer, 1000);
+    if (warningDiv.classList.contains('invisible')) {
+        countdown = setInterval(timer, 1000);
+        disable();
+        
+        this.classList.add('hidden');
+        pauseButton.classList.remove('hidden');
+    }
+//    disable();
     
     // remove the start button and replace it with the pause button
-    this.classList.add('hidden');
-    pauseButton.classList.remove('hidden');
+//    this.classList.add('hidden');
+//    pauseButton.classList.remove('hidden');
 };
 
 
@@ -112,6 +148,7 @@ function startTimer() {
  function pauseTimer() {
     // stops the countdown interval from running
     clearInterval(countdown);
+    disable();
     
     // remove the pause button and replace it with the start button
     this.classList.add('hidden');
@@ -137,6 +174,10 @@ function reset() {
         startButton.classList.remove('hidden');
     }
     
+    if (!warningDiv.classList.contains('invisible')) {
+        warningDiv.classList.add('invisible');
+    }
+    
     // reset all displays to default times
     updateDisplay.singleSeconds();
     updateDisplay.display();
@@ -154,8 +195,11 @@ function timer() {
         pauseButton.classList.add('hidden');
         startButton.classList.remove('hidden');
         
-        return;
+        intSessionTimeAmount = intBreakTimeAmount;
+        updateDisplay.display();
         
+        clearInterval(countdown);
+        return;
     } else if (intSessionSecondsAmount === 0) {
         // if seconds hits 0, it swaps to 59 while the minute goes down by one
         intSessionSecondsAmount = 59;
@@ -177,21 +221,21 @@ function timer() {
     
 }
 
-// Not sure why this isn't working
-//function disable() {
-//    if (subtractBreakButton.disabled) {
-//        subtractBreakButton.disabled = true;
-//        subtractSessionButton.disabled = true;
-//        addBreakButton.disabled = true;
-//        addSessionButton.disabled = true;
-//    } else {
-//        subtractBreakButton.disabled = false;
-//        subtractSessionButton.disabled = false;
-//        addBreakButton.disabled = false;
-//        addSessionButton.disabled = false;
-//    }
-//    
-//}
+// Disable the time adjusters while timer is running
+function disable() {
+    if (!startButton.classList.contains('hidden')) {
+        subtractBreakButton.disabled = true;
+        subtractSessionButton.disabled = true;
+        addBreakButton.disabled = true;
+        addSessionButton.disabled = true;
+    } else if (startButton.classList.contains('hidden')) {
+        subtractBreakButton.disabled = false;
+        subtractSessionButton.disabled = false;
+        addBreakButton.disabled = false;
+        addSessionButton.disabled = false;
+    }
+    
+}
 
 
 
