@@ -6,6 +6,10 @@
 |*|    - should i add a new intDisplayTime amount which swaps between the two?
 |*|    - it stores which time it is currently on
 |*|
+|*|  - maybe create two separate objects
+|*|    - one for breakTime and one for sessionTime
+|*|  - these two objects will house their amounts and their counters
+|*|
 \*/
 
 // grabbing document items

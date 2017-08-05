@@ -150,21 +150,26 @@ Buttons
 }
 
 .buttons button {
-    margin: 0 25px;
+    width: 75px;
+    margin: 0 15px;
     border: 1px solid black;
     background: #fff;
     padding: 5px 10px;
+    font-size: 16px;
     
     transition: all .25s;
 }
 .buttons button.start {
     border-color: #0f0;
+    color: #0f0;
 }
 .buttons button.pause {
     border-color: #00f;
+    color: #00f;
 }
 .buttons button.reset {
     border-color: #f00;
+    color: #f00;
 }
 .buttons button.start:hover {
     background: #0f0;
