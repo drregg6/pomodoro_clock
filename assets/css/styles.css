@@ -102,6 +102,7 @@ Clock
     
     background-color: #fff;
     box-shadow: 0 0 10px #000;
+    font-size: 32px;
 }
 
 /* -----------------------------------------------------------------------
@@ -131,6 +132,11 @@ Times
     margin-top: 10px;
     margin-left: 2.5px;
     margin-right: 2.5px;
+}
+
+.session-time-amount,
+.break-time-amount {
+    cursor: pointer;
 }
 
 /* -----------------------------------------------------------------------
