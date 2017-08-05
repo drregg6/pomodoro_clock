@@ -169,6 +169,7 @@ function startTimer() {
 function reset() {
     // stops the countdown interval from running
     clearInterval(countdown);
+    disable();
     
     // resets the default times
     intSessionTimeAmount = 25;
