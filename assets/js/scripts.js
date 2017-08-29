@@ -1,145 +1,145 @@
-/*\
-|*|
-|*|  TODO:
-|*|  - break functionality
-|*|  - it will ALWAYS go to break after the session time runs out //
-|*|    - should i add a new intDisplayTime amount which swaps between the two?
-|*|    - it stores which time it is currently on
-|*|
-|*|  - maybe create two separate objects
-|*|    - one for breakTime and one for sessionTime
-|*|  - these two objects will house their amounts and their counters
-|*|
-|*|  - the effin' disable() function is still not properly working!
-|*|
-|*|
-\*/
+// to pause a setInterval -- store the remaining time and resume on click
 
 
-
-
-
-
-// grabbing document items
-var displayTimeAmount, sessionTimeAmount, sessionSecondsAmount, breakTimeAmount, warningDiv;
-displayTimeAmount = document.querySelector('.display-time-amount');
-sessionTimeAmount = document.querySelector('.session-time-amount');
-sessionSecondsAmount = document.querySelector('.session-seconds-amount');
-breakTimeAmount = document.querySelector('.break-time-amount');
+// html element
+var displayTime, displaySession, displayBreak, warningDiv;
+displayTime = document.querySelector('.display-time-amount');
+displaySession = document.querySelector('.session-time-amount');
+displayBreak = document.querySelector('.break-time-amount');
 warningDiv = document.querySelector('.warning');
 
-// for mathematical purposes, the text needs to be converted to ints
-var intSessionTimeAmount, intSessionSecondsAmount, intBreakTimeAmount, intDisplayTimeAmount;
-intSessionTimeAmount = parseInt(sessionTimeAmount.textContent);
-intSessionSecondsAmount = parseInt(sessionSecondsAmount.textContent);
-intBreakTimeAmount = parseInt(breakTimeAmount.textContent);
+// ints
+var timeLeft, sessionTimeAmount, breakTimeAmount;
+timeLeft = document.querySelector('.display-time-amount').textContent;
+sessionTimeAmount = parseInt(document.querySelector('.session-time-amount').textContent);
+breakTimeAmount = parseInt(document.querySelector('.break-time-amount').textContent);
 
-// grabbing the buttons
-var buttons, startButton, pauseButton, substractSessionButton,
-    substractBreakButton, addSessionButton, addBreakButton, resetButton;
+// buttons
+var buttons, startButton, pauseButton, resetButton, substractSessionButton, subtractBreakButton, addSessionButton, addBreakButton;
 buttons = document.querySelectorAll('button');
 startButton = buttons[4];
 pauseButton = buttons[5];
+resetButton = buttons[6];
 subtractSessionButton = buttons[0];
 subtractBreakButton = buttons[2];
 addSessionButton = buttons[1];
 addBreakButton = buttons[3];
-resetButton = buttons[6];
 
-// variable to store the setTimer function
-var countdown, sessionFlag;
-// FALSE means sessionFlag timer is NOT running
-sessionFlag = false;
-
-
-
+// support
+var timerFlag, pauseFlag, sessionFlag, countdown, pauseTime;
+timerIsOn = false; // false means off, true means on
+isPaused = false; // false means off, true means on
+sessionFlag = 0; // 0 means session, 1 means break
+tempTime = 0;
 
 // event listeners
-subtractSessionButton.addEventListener('click', lessSessionTime);
-addSessionButton.addEventListener('click', moreSessionTime);
-subtractBreakButton.addEventListener('click', lessBreakTime);
-addBreakButton.addEventListener('click', moreBreakTime);
 startButton.addEventListener('click', startTimer);
-pauseButton.addEventListener('click', pauseTimer);
 resetButton.addEventListener('click', reset);
-sessionTimeAmount.addEventListener('input', sessionEditable);
-breakTimeAmount.addEventListener('input', breakEditable);
+subtractSessionButton.addEventListener('click', lessSessionTime);
+subtractBreakButton.addEventListener('click', lessBreakTime);
+addSessionButton.addEventListener('click', moreSessionTime);
+addBreakButton.addEventListener('click', moreBreakTime);
+displaySession.addEventListener('input', sessionEditable);
+displayBreak.addEventListener('input', breakEditable);
+
+
+
+
+// event listener functions
+function startTimer() {
+    timerIsOn = true;
+    disable();
+    var seconds = 0;
+    if (sessionFlag === 0) {
+        timer(sessionTimeAmount, seconds);
+    } else {
+        timer(breakTimeAmount, seconds);
+    }
+}
+
+
+function reset() {
+    timerIsOn = false;
+    isPaused = false;
+    sessionFlag = 0;
+    tempTime = 0;
+    
+    sessionTimeAmount = 25;
+    breakTimeAmount = 5;
+    
+    disable();
+    clearInterval(countdown);
+    updateDisplay();
+}
 
 
 function lessSessionTime() {
-    // as long as the session time is above 1, keep subtracting
-    if (intSessionTimeAmount > 1) {
-        intSessionTimeAmount--;
+    if (sessionTimeAmount > 5) {
+        sessionTimeAmount--;
     } else {
-        intSessionTimeAmount = 1;
+        sessionTimeAmount = 5;
     }
     
-    // update the display
-    updateDisplay.session();
-    updateDisplay.display();
+    updateDisplay();
 }
+
+
 function moreSessionTime() {
-    // keep sessions between 0 minutes and 60 minutes
-    if (intSessionTimeAmount > 0 && intSessionTimeAmount < 60) {
-        intSessionTimeAmount++;
-    } else if (intSessionTimeAmount === 60) {
-        intSessionTimeAmount = 60;
+    if (sessionTimeAmount < 90) {
+        sessionTimeAmount++;
+    } else {
+        sessionTimeAmount = 90;
     }
     
-    // update the display
-    updateDisplay.session();
-    updateDisplay.display();
+    updateDisplay();
 }
+
+
 function sessionEditable() {
-    // user input must be a number between 1 and 60
     if (isNaN(this.textContent)) {
         warningDiv.classList.remove('invisible');
-    } else if (this.textContent < 1 || this.textContent > 60) {
+    } else if (this.textContent < 5 || this.textContent > 90) {
         warningDiv.classList.remove('invisible');
     } else {
-        // if it passes, remove the warning and make the display that number
-        intSessionTimeAmount = parseInt(this.textContent);
-        updateDisplay.display();
+        sessionTimeAmount = parseInt(this.textContent);
+        updateDisplay();
         if (!warningDiv.classList.contains('invisible')) {
             warningDiv.classList.add('invisible');
         }
     }
 }
-
 
 
 function lessBreakTime() {
-    // as long as the break time is above 1 minute, keep subtracting
-    if (intBreakTimeAmount > 1) {
-        intBreakTimeAmount--;
+    if (breakTimeAmount > 2) {
+        breakTimeAmount--;
     } else {
-        intBreakTimeAmount = 1;
+        breakTimeAmount = 2;
     }
     
-    // update the display of the element
-    updateDisplay.break();
-};
-function moreBreakTime() {
-    // breaks are limited between 1 and 15 minutes
-    if (intBreakTimeAmount > 0 && intBreakTimeAmount < 15) {
-        intBreakTimeAmount++;
-    } else {
-        intBreakTimeAmount = 15;
-    }
-    
-    // update the display of the element on each click
-    updateDisplay.break();
+    updateDisplay();
 }
+
+
+function moreBreakTime() {
+    if (breakTimeAmount < 30) {
+        breakTimeAmount++;
+    } else {
+        breakTimeAmount = 30;
+    }
+    
+    updateDisplay();
+}
+
+
 function breakEditable() {
-    // user input must be a digit between 1 and 60
     if (isNaN(this.textContent)) {
         warningDiv.classList.remove('invisible');
-    } else if (this.textContent < 1 || this.textContent > 15) {
+    } else if (this.textContent < 2 || this.textContent > 30) {
         warningDiv.classList.remove('invisible');
     } else {
-        // if it passes, update the display and remove the warning
-        intBreakTimeAmount = parseInt(this.textContent);
-        updateDisplay.break();
+        breakTimeAmount = parseInt(this.textContent);
+        updateDisplay();
         if (!warningDiv.classList.contains('invisible')) {
             warningDiv.classList.add('invisible');
         }
@@ -148,153 +148,59 @@ function breakEditable() {
 
 
 
-// start button functionality
-function startTimer() {
-    // there must be a valid time in order for the timer to start
-    if (warningDiv.classList.contains('invisible')) {
-        // set countdown to setInterval function, running timer every 1 second
-        countdown = setInterval(timer, 1000);
-        disable();
-        if (sessionFlag) {
-            sessionFlag = false;
+
+
+// supporting functions
+function timer(minutes, seconds) {
+    countdown = setInterval(function() {
+        
+        if (minutes === 0 && seconds === 0) {
+            
+            if (sessionFlag === 0) {
+                timeLeft = breakTimeAmount + ':' + '00';
+                sessionFlag += 1;
+            } else {
+                timeLeft = sessionTimeAmount + ':' + '00';
+                sessionFlag -= 1;
+            }
+            
+            clearInterval(countdown);
+            
+        } else if (seconds === 0) {
+            seconds = 59;
+            minutes--;
+            timeLeft = minutes + ':' + seconds;
+        } else if (seconds <= 10) {
+            seconds--;
+            timeLeft = minutes + ':0' + seconds;
         } else {
-            sessionFlag = true;
+            seconds--;
+            timeLeft = minutes + ':' + seconds;
         }
         
-        this.classList.add('hidden');
-        pauseButton.classList.remove('hidden');
-    }
+        displayTime.textContent = timeLeft;
+        
+    }, 1000);
 };
 
 
-
-
-// pause button functionality
- function pauseTimer() {
-    // stops the countdown interval from running
-    clearInterval(countdown);
-    disable();
-    
-    // remove the pause button and replace it with the start button
-    this.classList.add('hidden');
-    startButton.classList.remove('hidden');
+function updateDisplay() {
+    displaySession.textContent = '' + sessionTimeAmount;
+    displayBreak.textContent = '' + breakTimeAmount;
+    displayTime.textContent = sessionTimeAmount + ':00';
 }
 
 
-
-
-// reset button functionality
-function reset() {
-    // stops the countdown interval from running
-    clearInterval(countdown);
-    disable();
-    sessionFlag = false;
-    
-    // resets the default times
-    intSessionTimeAmount = 25;
-    intSessionSecondsAmount = 0;
-    intBreakTimeAmount = 5;
-    
-    // if reset is pressed while start is hidden, show start and hide pause
-    if (startButton.classList.contains('hidden')) {
-        pauseButton.classList.add('hidden');
-        startButton.classList.remove('hidden');
-    }
-    
-    // if the warning is visible, remove it
-    if (!warningDiv.classList.contains('invisible')) {
-        warningDiv.classList.add('invisible');
-    }
-    
-    // reset all displays to default times
-    updateDisplay.singleSeconds();
-    updateDisplay.display();
-    updateDisplay.break();
-    updateDisplay.session();
-}
-
-
-
-// function to run for each second
-function timer() {
-    
-    // if double zeroes are hit, it's time to switch to a break session
-    if (intSessionTimeAmount === 0 && intSessionSecondsAmount === 0) {
-        pauseButton.classList.add('hidden');
-        startButton.classList.remove('hidden');
-        
-        if (sessionFlag) {
-            intSessionTimeAmount = intBreakTimeAmount;
-            updateDisplay.display();
-        } else {
-            intSessionTimeAmount = intSessionTimeAmount;
-            updateDisplay.display();
-        }
-        
-        clearInterval(countdown);
-        return;
-    } else if (intSessionSecondsAmount === 0) {
-        // if seconds hits 0, it swaps to 59 while the minute goes down by one
-        intSessionSecondsAmount = 59;
-        intSessionTimeAmount--;
-    } else {
-        // or seconds continues to count down
-        intSessionSecondsAmount--;
-    }
-    
-    // updating the display
-    if (intSessionSecondsAmount < 10 && intSessionSecondsAmount >= 0) {
-        // for single digit seconds, there needs to be a '0' in front of it
-        updateDisplay.singleSeconds();
-    } else {
-        // otherwise, display the string version of the int
-        updateDisplay.largerSeconds();
-        updateDisplay.display();
-    }
-    
-}
-
-
-
-
-// Disable the time adjusters while timer is running
-// this is still not working properly
 function disable() {
-    if (!startButton.classList.contains('hidden')) {
+    if (timerIsOn) {
         subtractBreakButton.disabled = true;
         subtractSessionButton.disabled = true;
         addBreakButton.disabled = true;
         addSessionButton.disabled = true;
-    } else if (startButton.classList.contains('hidden')) {
+    } else if (!timerIsOn) {
         subtractBreakButton.disabled = false;
         subtractSessionButton.disabled = false;
         addBreakButton.disabled = false;
         addSessionButton.disabled = false;
-    }
-}
-
-
-
-
-
-
-// object used to update various displays
-var updateDisplay = new UpdateDisplay();
-
-function UpdateDisplay() {
-    this.singleSeconds = function() {
-        sessionSecondsAmount.textContent = '0' + intSessionSecondsAmount;
-    }
-    this.largerSeconds = function() {
-        sessionSecondsAmount.textContent = '' + intSessionSecondsAmount;
-    }
-    this.display = function() {
-        displayTimeAmount.textContent = '' + intSessionTimeAmount;
-    }
-    this.session = function() {
-        sessionTimeAmount.textContent = '' + intSessionTimeAmount;
-    }
-    this.break = function() {
-        breakTimeAmount.textContent = '' + intBreakTimeAmount;
     }
 }
