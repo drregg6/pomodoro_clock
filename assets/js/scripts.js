@@ -4,6 +4,7 @@
 // TODO: comment code
 // TODO: test
 // TODO: feedback
+// TODO: implement a rule to make the breakTime always less than the sessionTime
 
 
 // html element
@@ -113,10 +114,10 @@ function reset() {
 
 
 function lessSessionTime() {
-    if (sessionTimeAmount > 5) {
+    if (sessionTimeAmount > 2) {
         sessionTimeAmount--;
     } else {
-        sessionTimeAmount = 5;
+        sessionTimeAmount = 2;
     }
     
     updateDisplay();
@@ -137,7 +138,7 @@ function moreSessionTime() {
 function sessionEditable() {
     if (isNaN(this.textContent)) {
         warningDiv.classList.remove('invisible');
-    } else if (this.textContent < 5 || this.textContent > 90) {
+    } else if (this.textContent < 2 || this.textContent > 90) {
         warningDiv.classList.remove('invisible');
     } else {
         sessionTimeAmount = parseInt(this.textContent);
@@ -150,10 +151,10 @@ function sessionEditable() {
 
 
 function lessBreakTime() {
-    if (breakTimeAmount > 2) {
+    if (breakTimeAmount > 1) {
         breakTimeAmount--;
     } else {
-        breakTimeAmount = 2;
+        breakTimeAmount = 1;
     }
     
     updateDisplay();
@@ -174,7 +175,7 @@ function moreBreakTime() {
 function breakEditable() {
     if (isNaN(this.textContent)) {
         warningDiv.classList.remove('invisible');
-    } else if (this.textContent < 2 || this.textContent > 30) {
+    } else if (this.textContent < 1 || this.textContent > 30) {
         warningDiv.classList.remove('invisible');
     } else {
         breakTimeAmount = parseInt(this.textContent);
@@ -264,3 +265,23 @@ function disable() {
         displaySession.contentEditable = true;
     }
 }
+
+/*
+
+breakTimeAmount should not be allowed to be greater than or equal to sessionTimeAmount
+it should be a universal rule
+
+
+ else if (this.textContent >= sessionTimeAmount) {
+        warningDiv.classList.add('invisible');
+        
+if (breakTimeAmount === sessionTimeAmount) {
+        breakTimeAmount = sessionTimeAmount - 1;
+    } else 
+
+if (sessionTimeAmount === breakTimeAmount) {
+        sessionTimeAmount--;
+        breakTimeAmount = sessionTimeAmount - 1;
+    } else
+    
+*/
