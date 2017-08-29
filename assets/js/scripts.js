@@ -10,7 +10,15 @@
 |*|    - one for breakTime and one for sessionTime
 |*|  - these two objects will house their amounts and their counters
 |*|
+|*|  - the effin' disable() function is still not properly working!
+|*|
+|*|
 \*/
+
+
+
+
+
 
 // grabbing document items
 var displayTimeAmount, sessionTimeAmount, sessionSecondsAmount, breakTimeAmount, warningDiv;
@@ -39,8 +47,9 @@ addBreakButton = buttons[3];
 resetButton = buttons[6];
 
 // variable to store the setTimer function
-var countdown;
-
+var countdown, sessionFlag;
+// FALSE means sessionFlag timer is NOT running
+sessionFlag = false;
 
 
 
@@ -146,6 +155,11 @@ function startTimer() {
         // set countdown to setInterval function, running timer every 1 second
         countdown = setInterval(timer, 1000);
         disable();
+        if (sessionFlag) {
+            sessionFlag = false;
+        } else {
+            sessionFlag = true;
+        }
         
         this.classList.add('hidden');
         pauseButton.classList.remove('hidden');
@@ -173,6 +187,8 @@ function startTimer() {
 function reset() {
     // stops the countdown interval from running
     clearInterval(countdown);
+    disable();
+    sessionFlag = false;
     
     // resets the default times
     intSessionTimeAmount = 25;
@@ -207,8 +223,13 @@ function timer() {
         pauseButton.classList.add('hidden');
         startButton.classList.remove('hidden');
         
-        intSessionTimeAmount = intBreakTimeAmount;
-        updateDisplay.display();
+        if (sessionFlag) {
+            intSessionTimeAmount = intBreakTimeAmount;
+            updateDisplay.display();
+        } else {
+            intSessionTimeAmount = intSessionTimeAmount;
+            updateDisplay.display();
+        }
         
         clearInterval(countdown);
         return;
@@ -233,6 +254,9 @@ function timer() {
     
 }
 
+
+
+
 // Disable the time adjusters while timer is running
 // this is still not working properly
 function disable() {
@@ -248,6 +272,9 @@ function disable() {
         addSessionButton.disabled = false;
     }
 }
+
+
+
 
 
 
