@@ -43,14 +43,14 @@ addBreakButton = buttons[3];
 
 
 // support
-var timerFlag, pauseFlag, sessionFlag, countdown, pauseTime, seconds, tempMin, tempSec;
+var timerFlag, pauseFlag, sessionFlag, countdown, pauseTime, seconds, tempMin, tempSec, alarmSound;
 timerIsOn = false; // false means off, true means on
 isPaused = false; // false means off, true means on
 sessionFlag = 0; // 0 means session, 1 means break
 seconds = 0;
 tempMin = 0;
 tempSec = 0;
-
+alarmSound = document.getElementById('audio');
 
 
 
@@ -204,6 +204,8 @@ function timer(minutes, seconds) {
     countdown = setInterval(function() {
         
         if (minutes === 0 && seconds === 0) {
+            alarmSound.play();
+            timerIsOn = false;
             
             if (sessionFlag === 0) {
                 timeLeft = breakTimeAmount + ':' + '00';
@@ -212,6 +214,9 @@ function timer(minutes, seconds) {
                 timeLeft = sessionTimeAmount + ':' + '00';
                 sessionFlag -= 1;
             }
+            
+            pauseButton.classList.add('hidden');
+            startButton.classList.remove('hidden');
             
             clearInterval(countdown);
             
