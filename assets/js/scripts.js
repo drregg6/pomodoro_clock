@@ -1,4 +1,9 @@
-// to pause a setInterval -- store the remaining time and resume on click
+// user will NOT be able to edit time while paused
+// time can only be edited on default or reset
+
+// TODO: comment code
+// TODO: test
+// TODO: feedback
 
 
 // html element
@@ -8,11 +13,19 @@ displaySession = document.querySelector('.session-time-amount');
 displayBreak = document.querySelector('.break-time-amount');
 warningDiv = document.querySelector('.warning');
 
+
+
+
+
 // ints
 var timeLeft, sessionTimeAmount, breakTimeAmount;
 timeLeft = document.querySelector('.display-time-amount').textContent;
 sessionTimeAmount = parseInt(document.querySelector('.session-time-amount').textContent);
 breakTimeAmount = parseInt(document.querySelector('.break-time-amount').textContent);
+
+
+
+
 
 // buttons
 var buttons, startButton, pauseButton, resetButton, substractSessionButton, subtractBreakButton, addSessionButton, addBreakButton;
@@ -25,16 +38,27 @@ subtractBreakButton = buttons[2];
 addSessionButton = buttons[1];
 addBreakButton = buttons[3];
 
+
+
+
+
 // support
-var timerFlag, pauseFlag, sessionFlag, countdown, pauseTime;
+var timerFlag, pauseFlag, sessionFlag, countdown, pauseTime, seconds, tempMin, tempSec;
 timerIsOn = false; // false means off, true means on
 isPaused = false; // false means off, true means on
 sessionFlag = 0; // 0 means session, 1 means break
-tempTime = 0;
+seconds = 0;
+tempMin = 0;
+tempSec = 0;
+
+
+
+
 
 // event listeners
 startButton.addEventListener('click', startTimer);
 resetButton.addEventListener('click', reset);
+pauseButton.addEventListener('click', pause);
 subtractSessionButton.addEventListener('click', lessSessionTime);
 subtractBreakButton.addEventListener('click', lessBreakTime);
 addSessionButton.addEventListener('click', moreSessionTime);
@@ -45,14 +69,22 @@ displayBreak.addEventListener('input', breakEditable);
 
 
 
+
 // event listener functions
 function startTimer() {
+    startButton.classList.add('hidden');
+    pauseButton.classList.remove('hidden');
     timerIsOn = true;
     disable();
-    var seconds = 0;
-    if (sessionFlag === 0) {
+    
+    if (isPaused) {
+        isPaused = false;
+        timer(tempMin, tempSec);
+    } else if (sessionFlag === 0) {
+        seconds = 0;
         timer(sessionTimeAmount, seconds);
     } else {
+        seconds = 0;
         timer(breakTimeAmount, seconds);
     }
 }
@@ -62,7 +94,14 @@ function reset() {
     timerIsOn = false;
     isPaused = false;
     sessionFlag = 0;
-    tempTime = 0;
+    tempMin = 0;
+    tempSec = 0;
+    seconds = 0;
+    
+    if (startButton.classList.contains('hidden')){
+        startButton.classList.remove('hidden');
+        pauseButton.classList.add('hidden');
+    }
     
     sessionTimeAmount = 25;
     breakTimeAmount = 5;
@@ -147,6 +186,16 @@ function breakEditable() {
 }
 
 
+function pause() {
+    pauseButton.classList.add('hidden');
+    startButton.classList.remove('hidden');
+    
+    isPaused = true;
+    
+    clearInterval(countdown);
+}
+
+
 
 
 
@@ -179,6 +228,8 @@ function timer(minutes, seconds) {
         }
         
         displayTime.textContent = timeLeft;
+        tempMin = minutes;
+        tempSec = seconds;
         
     }, 1000);
 };
@@ -197,10 +248,14 @@ function disable() {
         subtractSessionButton.disabled = true;
         addBreakButton.disabled = true;
         addSessionButton.disabled = true;
+        displayBreak.contentEditable = false;
+        displaySession.contentEditable = false;
     } else if (!timerIsOn) {
         subtractBreakButton.disabled = false;
         subtractSessionButton.disabled = false;
         addBreakButton.disabled = false;
         addSessionButton.disabled = false;
+        displayBreak.contentEditable = true;
+        displaySession.contentEditable = true;
     }
 }
